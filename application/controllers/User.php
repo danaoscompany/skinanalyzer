@@ -68,6 +68,7 @@ class User extends CI_Controller {
 	public function upload_skin_image() {
 		$bucketID = intval($this->input->post('bucket_id'));
 		$note = $this->input->post('note');
+		$points = $this->input->post('points');
 		$date = $this->input->post('date');
 		$type = intval($this->input->post('type'));
 		$config = array(
@@ -84,6 +85,7 @@ class User extends CI_Controller {
         		'bucket_id' => $bucketID,
         		'path' => $this->upload->data()['file_name'],
         		'note' => $note,
+        		'points' => $points,
         		'date' => $date,
         		'type' => $type
         	));
