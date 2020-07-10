@@ -92,6 +92,8 @@ class User extends CI_Controller {
         		'id' => $id,
         		'path' => $this->upload->data()['file_name']
         	));
+        } else {
+        	echo json_encode($this->upload->display_errors());
         }
 	}
 
