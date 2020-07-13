@@ -19,6 +19,8 @@ class User extends CI_Controller {
 			'province' => $province,
 			'birthday' => $birthday
 		));
+		$id = intval($this->db->insert_id());
+		echo json_encode($this->db->get_where('users', array('id' => $id))->row_array());
 	}
 
 	public function get_sessions() {
