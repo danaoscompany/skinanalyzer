@@ -2,6 +2,46 @@
 
 class User extends CI_Controller {
 
+	public function add_patient() {
+		$userID = intval($this->input->post('user_id'));
+		$name = $this->input->post('name');
+		$phone = $this->input->post('phone');
+		$address = $this->input->post('address');
+		$city = $this->input->post('city');
+		$province = $this->input->post('province');
+		$birthday = $this->input->post('birthday');
+		$this->db->insert('patients', array(
+			'user_id' => $userID,
+			'name' => $name,
+			'phone' => $phone,
+			'address' => $address,
+			'city' => $city,
+			'province' => $province,
+			'birthday' => $birthday
+		));
+	}
+
+	public function get_sessions() {
+		$sessions = $this->db-.get('sessions')->result_array();
+		for ($i=0; $i<sizeof($sessions); $i++) {
+			$sessions[$i]['images'] = $this->db->get_where('session_images', array(
+				'session_id' => intval($sessions[$i]['id'])
+			))->result_array();
+		}
+		echo json_encode($sessions);
+	}
+
+	public function get_session() {
+		$id = intval($this->input->post('id'));
+		$session = $this->db-.get_where('sessions', array(
+			'id' => $id
+		))->row_array();
+		$session['images'] = $this->db->get_where('session_images', array(
+			'session_id' => $id
+		))->result_array();
+		echo json_encode($session);
+	}
+
 	public function sync_devices_with_uuid() {
 		$devices = json_decode($this->input->post('devices'), true);
 		for ($i=0; $i<sizeof($devices); $i++) {
@@ -46,7 +86,8 @@ class User extends CI_Controller {
 	
 	public function get_buckets() {
 		$userID = intval($this->input->post('user_id'));
-		$buckets = $this->db->query("SELECT * FROM `buckets` WHERE `user_id`=" . $userID)->result_array();
+		$sessionID = intval($this->input->post('session_id'));
+		$buckets = $this->db->query("SELECT * FROM `buckets` WHERE `user_id`=" . $userID . " AND `session_id`=" . $sessionID)->result_array();
 		for ($i=0; $i<sizeof($buckets); $i++) {
 			$bucket = $buckets[$i];
 			$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_id`=" . $bucket['id'])->result_array();
