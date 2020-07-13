@@ -33,7 +33,7 @@ class User extends CI_Controller {
 
 	public function get_session() {
 		$id = intval($this->input->post('id'));
-		$session = $this->db-.get_where('sessions', array(
+		$session = $this->db->get_where('sessions', array(
 			'id' => $id
 		))->row_array();
 		$session['images'] = $this->db->get_where('session_images', array(
