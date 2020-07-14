@@ -37,7 +37,7 @@ class User extends CI_Controller {
 		$session = $this->db->get_where('sessions', array(
 			'id' => $id
 		))->row_array();
-		$session['images'] = $this->db->get_where('session_images', array(
+		$session['images'] = $this->db->get_where('bucket_images', array(
 			'session_id' => $id
 		))->result_array();
 		$session['patient_name'] = $this->db->get_where('patients', array(
