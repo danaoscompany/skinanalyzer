@@ -27,18 +27,18 @@ class User extends CI_Controller {
 		$sessions = $this->db->get('sessions')->result_array();
 		for ($i=0; $i<sizeof($sessions); $i++) {
 			$session = $sessions[$i];
-			$sessions[$i]['images'] = $this->db->query("SELECT * FROM `bucket_images` WHERE `session_id`=" . $session['id'] . " LIMIT 5")->result_array();
+			$sessions[$i]['images'] = $this->db->query("SELECT * FROM `bucket_images` WHERE `session_uuid`='" . $session['uuid'] . "' LIMIT 5")->result_array();
 		}
 		echo json_encode($sessions);
 	}
 
 	public function get_session() {
-		$id = intval($this->input->post('id'));
+		$uuid = $this->input->post('uuid');
 		$session = $this->db->get_where('sessions', array(
-			'id' => $id
+			'uuid' => $uuid
 		))->row_array();
 		$session['images'] = $this->db->get_where('bucket_images', array(
-			'session_id' => $id
+			'session_uuid' => $uuid
 		))->result_array();
 		$session['patient_name'] = $this->db->get_where('patients', array(
 			'id' => intval($session['patient_id'])
@@ -90,8 +90,8 @@ class User extends CI_Controller {
 	
 	public function get_buckets() {
 		$userID = intval($this->input->post('user_id'));
-		$sessionID = intval($this->input->post('session_id'));
-		$buckets = $this->db->query("SELECT * FROM `buckets` WHERE `user_id`=" . $userID . " AND `session_id`=" . $sessionID)->result_array();
+		$sessionUUID = $this->input->post('session_uuid');
+		$buckets = $this->db->query("SELECT * FROM `buckets` WHERE `user_id`=" . $userID . " AND `session_uuid`='" . $sessionUUID . "'")->result_array();
 		for ($i=0; $i<sizeof($buckets); $i++) {
 			$bucket = $buckets[$i];
 			$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_id`=" . $bucket['id'])->result_array();
@@ -114,7 +114,7 @@ class User extends CI_Controller {
 	
 	public function upload_skin_image() {
 		$bucketID = intval($this->input->post('bucket_id'));
-		$sessionID = intval($this->input->post('session_id'));
+		$sessionUUID = $this->input->post('session_uuid');
 		$note = $this->input->post('note');
 		$points = $this->input->post('points');
 		$date = $this->input->post('date');
@@ -131,7 +131,7 @@ class User extends CI_Controller {
         if ($this->upload->do_upload('file')) {
         	$this->db->insert('bucket_images', array(
         		'bucket_id' => $bucketID,
-        		'session_id' => $sessionID,
+        		'session_uuid' => $sessionUUID,
         		'path' => $this->upload->data()['file_name'],
         		'note' => $note,
         		'points' => $points,
