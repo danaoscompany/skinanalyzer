@@ -25,6 +25,10 @@ class User extends CI_Controller {
 
 	public function get_sessions() {
 		$sessions = $this->db->get('sessions')->result_array();
+		for ($i=0; $i<sizeof($sessions); $i++) {
+			$session = $sessions[$i];
+			$sessions[$i]['images'] = $this->db->query("SELECT * FROM `bucket_images` WHERE `session_id`=" . $session['id'] . " LIMIT 5")->result_array();
+		}
 		echo json_encode($sessions);
 	}
 
