@@ -40,6 +40,9 @@ class User extends CI_Controller {
 		$session['images'] = $this->db->get_where('session_images', array(
 			'session_id' => $id
 		))->result_array();
+		$session['patient_name'] = $this->db->get_where('patients', array(
+			'id' => intval($session['patient_id'])
+		))->row_array()['name'];
 		echo json_encode($session);
 	}
 
