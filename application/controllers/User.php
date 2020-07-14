@@ -109,6 +109,7 @@ class User extends CI_Controller {
 	
 	public function upload_skin_image() {
 		$bucketID = intval($this->input->post('bucket_id'));
+		$sessionID = intval($this->input->post('session_id'));
 		$note = $this->input->post('note');
 		$points = $this->input->post('points');
 		$date = $this->input->post('date');
@@ -125,6 +126,7 @@ class User extends CI_Controller {
         if ($this->upload->do_upload('file')) {
         	$this->db->insert('bucket_images', array(
         		'bucket_id' => $bucketID,
+        		'session_id' => $sessionID,
         		'path' => $this->upload->data()['file_name'],
         		'note' => $note,
         		'points' => $points,
