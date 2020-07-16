@@ -4,6 +4,7 @@ class User extends CI_Controller {
 
 	public function add_patient() {
 		$userID = intval($this->input->post('user_id'));
+		$uuid = $this->input->post('uuid');
 		$name = $this->input->post('name');
 		$phone = $this->input->post('phone');
 		$address = $this->input->post('address');
@@ -12,6 +13,7 @@ class User extends CI_Controller {
 		$birthday = $this->input->post('birthday');
 		$this->db->insert('patients', array(
 			'user_id' => $userID,
+			'uuid' => $uuid,
 			'name' => $name,
 			'phone' => $phone,
 			'address' => $address,
