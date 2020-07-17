@@ -121,6 +121,7 @@ class User extends CI_Controller {
 		$sessionUUID = $this->input->post('session_uuid');
 		$note = $this->input->post('note');
 		$points = $this->input->post('points');
+		$type = intval($this->input->post('type'));
 		$date = $this->input->post('date');
 		$type = intval($this->input->post('type'));
 		$config = array(
@@ -139,6 +140,7 @@ class User extends CI_Controller {
         		'path' => $this->upload->data()['file_name'],
         		'note' => $note,
         		'points' => $points,
+        		'type' => $type,
         		'date' => $date,
         		'type' => $type
         	));
