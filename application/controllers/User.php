@@ -96,7 +96,7 @@ class User extends CI_Controller {
 		$buckets = $this->db->query("SELECT * FROM `buckets` WHERE `user_id`=" . $userID . " AND `session_uuid`='" . $sessionUUID . "'")->result_array();
 		for ($i=0; $i<sizeof($buckets); $i++) {
 			$bucket = $buckets[$i];
-			$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_id`=" . $bucket['id'])->result_array();
+			$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_uuid`='" . $bucket['uuid'] . "'")->result_array();
 			$buckets[$i]['images'] = $images;
 		}
 		echo json_encode($buckets);
@@ -117,7 +117,7 @@ class User extends CI_Controller {
 	}
 	
 	public function upload_skin_image() {
-		$bucketID = intval($this->input->post('bucket_id'));
+		$bucketUUID = intval($this->input->post('bucket_uuid'));
 		$sessionUUID = $this->input->post('session_uuid');
 		$note = $this->input->post('note');
 		$points = $this->input->post('points');
@@ -135,7 +135,7 @@ class User extends CI_Controller {
         $this->load->library('upload', $config);
         if ($this->upload->do_upload('file')) {
         	$this->db->insert('bucket_images', array(
-        		'bucket_id' => $bucketID,
+        		'bucket_uuid' => $bucketUUID,
         		'session_uuid' => $sessionUUID,
         		'path' => $this->upload->data()['file_name'],
         		'note' => $note,
