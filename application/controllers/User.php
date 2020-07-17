@@ -105,10 +105,12 @@ class User extends CI_Controller {
 	public function add_bucket() {
 		$uuid = $this->input->post('uuid');
 		$deviceUUID = $this->input->post('device_uuid');
+		$sessionUUID = $this->input->post('session_uuid');
 		$userID = intval($this->input->post('user_id'));
 		$this->db->insert('buckets', array(
 			'user_id' => $userID,
 			'uuid' => $uuid,
+			'session_uuid' => $sessionUUID,
 			'device_uuid' => $deviceUUID
 		));
 		echo intval($this->db->insert_id());
