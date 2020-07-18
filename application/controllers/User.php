@@ -158,10 +158,6 @@ class User extends CI_Controller {
         		'type' => $type
         	));
         	$id = intval($this->db->insert_id());
-        	$bucketImage = $this->db->query("SELECT * FROM `bucket_images` WHERE `id`=" . $id)->row_array();
-        	$bucketImagesJSON = json_decode($this->db->query("SELECT * FROM `buckets` WHERE `uuid`='" . $bucketUUID . "'")->row_array()['images'], true);
-        	array_push($bucketImagesJSON, $bucketImage);
-        	$this->db->query("UPDATE `buckets` SET `images`='" . json_encode($bucketImagesJSON) . "' WHERE `uuid`='" . $bucketUUID . "'");
         	echo json_encode(array(
         		'id' => $id,
         		'path' => $this->upload->data()['file_name']
