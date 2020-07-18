@@ -9,6 +9,12 @@ class User extends CI_Controller {
 		$this->db->query("DELETE FROM `sessions`");
 	}
 
+	public function clear_buckets() {
+		$this->db->query("DELETE FROM `buckets`");
+		$this->db->query("DELETE FROM `bucket_images`");
+		$this->db->query("DELETE FROM `images`");
+	}
+
 	public function add_patient() {
 		$userID = intval($this->input->post('user_id'));
 		$uuid = $this->input->post('uuid');
