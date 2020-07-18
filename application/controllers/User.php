@@ -130,7 +130,7 @@ class User extends CI_Controller {
 	}
 	
 	public function upload_skin_image() {
-		$bucketUUID = intval($this->input->post('bucket_uuid'));
+		$bucketUUID = $this->input->post('bucket_uuid');
 		$sessionUUID = $this->input->post('session_uuid');
 		$note = $this->input->post('note');
 		$points = $this->input->post('points');
