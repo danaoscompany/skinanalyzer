@@ -66,7 +66,7 @@ class User extends CI_Controller {
 		$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_uuid`='" . $uuid . "'")->result_array();
 		for ($i=0; $i<sizeof($images); $i++) {
 			$image = $images[$i];
-			if (!unlink("/userdata/" . $image['path'])) {
+			if (!unlink("./userdata/" . $image['path'])) {
 				echo "Delete failed...\n";
 			}
 			echo "File path: " . $image['path'] . "\n";
