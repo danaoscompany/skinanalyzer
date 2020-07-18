@@ -63,11 +63,10 @@ class User extends CI_Controller {
 	
 	public function delete_bucket() {
 		$uuid = $this->input->post('uuid');
-		$this->load->helper('file');
 		$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_uuid`='" . $uuid . "'")->result_array();
 		for ($i=0; $i<sizeof($images); $i++) {
 			$image = $images[$i];
-			delete_files("./userdata/" . $image['path']);
+			unlink("/userdata/" . $image['path']);
 			$this->db->query("DELETE FROM `bucket_images` WHERE `id`=" . $image['id']);
 		}
 		$this->db->query("DELETE FROM `buckets` WHERE `uuid`='" . $uuid . "'");
