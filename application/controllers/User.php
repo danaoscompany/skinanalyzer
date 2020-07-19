@@ -69,7 +69,7 @@ class User extends CI_Controller {
 		}
 	}
 	
-	private function $this->get_real_string($array, $indexName) {
+	private function get_real_string($array, $indexName) {
 		if (isset($array[$indexName])) {
 			return $array[$indexName];
 		} else {
@@ -77,7 +77,7 @@ class User extends CI_Controller {
 		}
 	}
 	
-	private function $this->get_real_int($array, $indexName) {
+	private function get_real_int($array, $indexName) {
 		if (isset($array[$indexName])) {
 			return intval($array[$indexName]);
 		} else {
