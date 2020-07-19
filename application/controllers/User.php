@@ -81,7 +81,7 @@ class User extends CI_Controller {
 		if (isset($array[$indexName])) {
 			return $array[$indexName];
 		} else {
-			return json_decode(array());
+			return json_encode(array());
 		}
 	}
 	
