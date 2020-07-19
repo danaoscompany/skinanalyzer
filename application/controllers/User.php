@@ -69,6 +69,22 @@ class User extends CI_Controller {
 		}
 	}
 	
+	private function $this->get_real_string($array, $indexName) {
+		if (isset($array[$indexName])) {
+			return $array[$indexName];
+		} else {
+			return "";
+		}
+	}
+	
+	private function $this->get_real_int($array, $indexName) {
+		if (isset($array[$indexName])) {
+			return intval($array[$indexName]);
+		} else {
+			return 0;
+		}
+	}
+	
 	public function sync_buckets() {
 		$buckets = json_decode($this->input->post('buckets'), true);
 		for ($i=0; $i<sizeof($buckets); $i++) {
@@ -76,15 +92,15 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `buckets` WHERE `uuid`='" . $bucket['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $bucket['uuid']);
 				$this->db->update("buckets", array(
-					"user_id" => intval($bucket['user_id']),
-					"session_uuid" => $bucket['session_uuid'],
-					"device_uuid" => $bucket['device_uuid']
+					"user_id" => $this->get_real_int($bucket, 'user_id'),
+					"session_uuid" => $this->get_real_string($bucket, 'session_uuid'),
+					"device_uuid" => $this->get_real_string($bucket, 'device_uuid')
 				));
 			} else {
 				$this->db->insert("buckets", array(
-					"user_id" => intval($bucket['user_id']),
-					"session_uuid" => $bucket['session_uuid'],
-					"device_uuid" => $bucket['device_uuid']
+					"user_id" => $this->get_real_int($bucket, 'user_id'),
+					"session_uuid" => $this->get_real_string($bucket, 'session_uuid'),
+					"device_uuid" => $this->get_real_string($bucket, 'device_uuid')
 				));
 			}
 			$images = json_decode($bucket['images'], true);
@@ -93,27 +109,27 @@ class User extends CI_Controller {
 				if ($this->db->query("SELECT * FROM `bucket_images` WHERE `uuid`='" . $image['uuid'] . "'")->num_rows() > 0) {
 					$this->db->where("uuid", $image['uuid']);
 					$this->db->update("bucket_images", array(
-						"bucket_uuid" => $image['bucket_uuid'],
-						"session_uuid" => $image['session_uuid'],
-						"type" => intval($image['type']),
-						"name" => $image['name'],
-						"path" => $image['path'],
-						"points" => $image['points'],
-						"note" => $image['note'],
-						"date" => $image['date'],
-						"local" => get_boolean_value($image['local'])
+						"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
+						"session_uuid" => $this->get_real_string($image, 'session_uuid'),
+						"type" => $this->get_real_int($image, 'type'),
+						"name" => $this->get_real_string($image, 'name'),
+						"path" => $this->get_real_string($image, 'path'),
+						"points" => $this->get_real_string($image, 'points'),
+						"note" => $this->get_real_string($image, 'note'),
+						"date" => $this->get_real_string($image, 'date'),
+						"local" => $this->get_boolean_value($image['local'])
 					));
 				} else {
 					$this->db->insert("bucket_images", array(
-						"bucket_uuid" => $image['bucket_uuid'],
-						"session_uuid" => $image['session_uuid'],
-						"type" => intval($image['type']),
-						"name" => $image['name'],
-						"path" => $image['path'],
-						"points" => $image['points'],
-						"note" => $image['note'],
-						"date" => $image['date'],
-						"local" => get_boolean_value($image['local'])
+						"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
+						"session_uuid" => $this->get_real_string($image, 'session_uuid'),
+						"type" => $this->get_real_int($image, 'type'),
+						"name" => $this->get_real_string($image, 'name'),
+						"path" => $this->get_real_string($image, 'path'),
+						"points" => $this->get_real_string($image, 'points'),
+						"note" => $this->get_real_string($image, 'note'),
+						"date" => $this->get_real_string($image, 'date'),
+						"local" => $this->get_boolean_value($image['local'])
 					));
 				}
 			}
@@ -127,17 +143,17 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `devices` WHERE `uuid`='" . $device['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $device['uuid']);
 				$this->db->update("devices", array(
-					"user_id" => intval($device['user_id']),
-					"device" => $device['device'],
-					"model" => $device['model'],
-					"type" => $device['type']
+					"user_id" => $this->get_real_int($device, 'user_id'),
+					"device" => $this->get_real_string($device, 'device'),
+					"model" => $this->get_real_string($device, 'model'),
+					"type" => $this->get_real_string($device, 'type')
 				));
 			} else {
 				$this->db->insert("devices", array(
-					"user_id" => intval($device['user_id']),
-					"device" => $device['device'],
-					"model" => $device['model'],
-					"type" => $device['type']
+					"user_id" => $this->get_real_int($device, 'user_id'),
+					"device" => $this->get_real_string($device, 'device'),
+					"model" => $this->get_real_string($device, 'model'),
+					"type" => $this->get_real_string($device, 'type')
 				));
 			}
 		}
@@ -150,29 +166,29 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `patients` WHERE `uuid`='" . $patient['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $patient['uuid']);
 				$this->db->update("patients", array(
-					"user_id" => intval($patient['user_id']),
-					"custom_id" => $patient['custom_id'],
-					"name" => $patient['name'],
-					"address" => $patient['address'],
-					"city" => $patient['city'],
-					"province" => $patient['province'],
-					"birthday" => $patient['birthday'],
-					"gender" => $patient['gender'],
-					"email" => $patient['email'],
-					"phone" => $patient['phone']
+					"user_id" => $this->get_real_int($patient, 'user_id'),
+					"custom_id" => $this->get_real_string($patient, 'custom_id'),
+					"name" => $this->get_real_string($patient, 'name'),
+					"address" => $this->get_real_string($patient, 'address'),
+					"city" => $this->get_real_string($patient, 'city'),
+					"province" => $this->get_real_string($patient, 'province'),
+					"birthday" => $this->get_real_string($patient, 'birthday'),
+					"gender" => $this->get_real_string($patient, 'gender'),
+					"email" => $this->get_real_string($patient, 'email'),
+					"phone" => $this->get_real_string($patient, 'phone')
 				));
 			} else {
 				$this->db->insert("patients", array(
-					"user_id" => intval($patient['user_id']),
-					"custom_id" => $patient['custom_id'],
-					"name" => $patient['name'],
-					"address" => $patient['address'],
-					"city" => $patient['city'],
-					"province" => $patient['province'],
-					"birthday" => $patient['birthday'],
-					"gender" => $patient['gender'],
-					"email" => $patient['email'],
-					"phone" => $patient['phone']
+					"user_id" => $this->get_real_int($patient, 'user_id'),
+					"custom_id" => $this->get_real_string($patient, 'custom_id'),
+					"name" => $this->get_real_string($patient, 'name'),
+					"address" => $this->get_real_string($patient, 'address'),
+					"city" => $this->get_real_string($patient, 'city'),
+					"province" => $this->get_real_string($patient, 'province'),
+					"birthday" => $this->get_real_string($patient, 'birthday'),
+					"gender" => $this->get_real_string($patient, 'gender'),
+					"email" => $this->get_real_string($patient, 'email'),
+					"phone" => $this->get_real_string($patient, 'phone')
 				));
 			}
 		}
@@ -185,15 +201,15 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `sessions` WHERE `uuid`='" . $session['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $session['uuid']);
 				$this->db->update("sessions", array(
-					"name" => $session['name'],
-					"date" => $session['date'],
-					"patient_id" => intval($session['patient_id']),
+					"name" => $this->get_real_string($session, 'name'),
+					"date" => $this->get_real_string($session, 'date'),
+					"patient_id" => $this->get_real_int($session, 'patient_id'),
 				));
 			} else {
 				$this->db->insert("sessions", array(
-					"name" => $session['name'],
-					"date" => $session['date'],
-					"patient_id" => intval($session['patient_id']),
+					"name" => $this->get_real_string($session, 'name'),
+					"date" => $this->get_real_string($session, 'date'),
+					"patient_id" => $this->get_real_string($session, 'patient_id'),
 				));
 			}
 		}
