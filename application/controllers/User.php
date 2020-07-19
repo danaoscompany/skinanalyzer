@@ -115,7 +115,7 @@ class User extends CI_Controller {
 			for ($j=0; $j<sizeof($images); $j++) {
 				$image = $images[$j];
 				if ($this->db->query("SELECT * FROM `bucket_images` WHERE `uuid`='" . $this->get_real_string($image, 'uuid') . "'")->num_rows() > 0) {
-					$this->db->where("uuid", $image['uuid']);
+					$this->db->where("uuid", $this->get_real_string($image, 'uuid'));
 					$this->db->update("bucket_images", array(
 						"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
 						"session_uuid" => $this->get_real_string($image, 'session_uuid'),
