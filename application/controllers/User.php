@@ -134,7 +134,7 @@ class User extends CI_Controller {
 						"type" => $this->get_real_int($image, 'type'),
 						"name" => $this->get_real_string($image, 'name'),
 						"path" => $this->get_real_string($image, 'path'),
-						"points" => $this->get_real_string($image, 'points'),
+						"points" => json_encode($this->get_real_json_array($image, 'points')),
 						"note" => $this->get_real_string($image, 'note'),
 						"date" => $this->get_real_string($image, 'date'),
 						"local" => $this->get_boolean_value($image['local'])
