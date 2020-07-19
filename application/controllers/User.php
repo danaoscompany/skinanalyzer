@@ -61,6 +61,144 @@ class User extends CI_Controller {
 		echo json_encode($session);
 	}
 	
+	private function get_boolean_value($value) {
+		if ($value) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	public function sync_buckets() {
+		$buckets = json_decode($this->input->post('buckets'), true);
+		for ($i=0; $i<sizeof($buckets); $i++) {
+			$bucket = $buckets[$i];
+			if ($this->db->query("SELECT * FROM `buckets` WHERE `uuid`='" . $bucket['uuid'] . "'")->num_rows() > 0) {
+				$this->db->where("uuid", $bucket['uuid']);
+				$this->db->update("buckets", array(
+					"user_id" => intval($bucket['user_id']),
+					"session_uuid" => $bucket['session_uuid'],
+					"device_uuid" => $bucket['device_uuid']
+				));
+			} else {
+				$this->db->insert("buckets", array(
+					"user_id" => intval($bucket['user_id']),
+					"session_uuid" => $bucket['session_uuid'],
+					"device_uuid" => $bucket['device_uuid']
+				));
+			}
+			$images = json_decode($bucket['images'], true);
+			for ($j=0; $j<sizeof($images); $j++) {
+				$image = $images[$j];
+				if ($this->db->query("SELECT * FROM `bucket_images` WHERE `uuid`='" . $image['uuid'] . "'")->num_rows() > 0) {
+					$this->db->where("uuid", $image['uuid']);
+					$this->db->update("bucket_images", array(
+						"bucket_uuid" => $image['bucket_uuid'],
+						"session_uuid" => $image['session_uuid'],
+						"type" => intval($image['type']),
+						"name" => $image['name'],
+						"path" => $image['path'],
+						"points" => $image['points'],
+						"note" => $image['note'],
+						"date" => $image['date'],
+						"local" => get_boolean_value($image['local'])
+					));
+				} else {
+					$this->db->insert("bucket_images", array(
+						"bucket_uuid" => $image['bucket_uuid'],
+						"session_uuid" => $image['session_uuid'],
+						"type" => intval($image['type']),
+						"name" => $image['name'],
+						"path" => $image['path'],
+						"points" => $image['points'],
+						"note" => $image['note'],
+						"date" => $image['date'],
+						"local" => get_boolean_value($image['local'])
+					));
+				}
+			}
+		}
+	}
+	
+	public function sync_devices() {
+		$devices = json_decode($this->input->post('devices'), true);
+		for ($i=0; $i<sizeof($devices); $i++) {
+			$device = $devices[$i];
+			if ($this->db->query("SELECT * FROM `devices` WHERE `uuid`='" . $device['uuid'] . "'")->num_rows() > 0) {
+				$this->db->where("uuid", $device['uuid']);
+				$this->db->update("devices", array(
+					"user_id" => intval($device['user_id']),
+					"device" => $device['device'],
+					"model" => $device['model'],
+					"type" => $device['type']
+				));
+			} else {
+				$this->db->insert("devices", array(
+					"user_id" => intval($device['user_id']),
+					"device" => $device['device'],
+					"model" => $device['model'],
+					"type" => $device['type']
+				));
+			}
+		}
+	}
+	
+	public function sync_patients() {
+		$patients = json_decode($this->input->post('patients'), true);
+		for ($i=0; $i<sizeof($patients); $i++) {
+			$patient = $patients[$i];
+			if ($this->db->query("SELECT * FROM `patients` WHERE `uuid`='" . $patient['uuid'] . "'")->num_rows() > 0) {
+				$this->db->where("uuid", $patient['uuid']);
+				$this->db->update("patients", array(
+					"user_id" => intval($patient['user_id']),
+					"custom_id" => $patient['custom_id'],
+					"name" => $patient['name'],
+					"address" => $patient['address'],
+					"city" => $patient['city'],
+					"province" => $patient['province'],
+					"birthday" => $patient['birthday'],
+					"gender" => $patient['gender'],
+					"email" => $patient['email'],
+					"phone" => $patient['phone']
+				));
+			} else {
+				$this->db->insert("patients", array(
+					"user_id" => intval($patient['user_id']),
+					"custom_id" => $patient['custom_id'],
+					"name" => $patient['name'],
+					"address" => $patient['address'],
+					"city" => $patient['city'],
+					"province" => $patient['province'],
+					"birthday" => $patient['birthday'],
+					"gender" => $patient['gender'],
+					"email" => $patient['email'],
+					"phone" => $patient['phone']
+				));
+			}
+		}
+	}
+	
+	public function sync_sessions() {
+		$sessions = json_decode($this->input->post('sessions'), true);
+		for ($i=0; $i<sizeof($sessions); $i++) {
+			$session = $sessions[$i];
+			if ($this->db->query("SELECT * FROM `sessions` WHERE `uuid`='" . $session['uuid'] . "'")->num_rows() > 0) {
+				$this->db->where("uuid", $session['uuid']);
+				$this->db->update("sessions", array(
+					"name" => $session['name'],
+					"date" => $session['date'],
+					"patient_id" => intval($session['patient_id']),
+				));
+			} else {
+				$this->db->insert("sessions", array(
+					"name" => $session['name'],
+					"date" => $session['date'],
+					"patient_id" => intval($session['patient_id']),
+				));
+			}
+		}
+	}
+	
 	public function delete_bucket() {
 		$uuid = $this->input->post('uuid');
 		$images = $this->db->query("SELECT * FROM `bucket_images` WHERE `bucket_uuid`='" . $uuid . "'")->result_array();
@@ -90,22 +228,6 @@ class User extends CI_Controller {
 				$this->db->where('uuid', $device['uuid']);
 				$this->db->update('devices', array(
 					'user_id' => $device['user_id'],
-					'device' => $device['device'],
-					'model' => $device['model'],
-					'type' => $device['type']
-				));
-			}
-		}
-	}
-
-	public function sync_devices() {
-		$devices = json_decode($this->input->post('devices'), true);
-		for ($i=0; $i<sizeof($devices); $i++) {
-			$device = $devices[$i];
-			$this->db->where('device', $device['device'])->where('model', $device['model'])->where('type', $device['type']);
-			$results = $this->db->get('devices');
-			if (sizeof($results) <= 0) {
-				$this->db->insert('devices', array(
 					'device' => $device['device'],
 					'model' => $device['model'],
 					'type' => $device['type']
