@@ -62,7 +62,7 @@ class User extends CI_Controller {
 	}
 	
 	private function get_boolean_value($jsonItem, $name) {
-		if (isset($jsonItem[$name]) {
+		if (isset($jsonItem[$name])) {
 			$value = boolval($jsonItem[$name]);
 			if ($value) {
 				return 1;
