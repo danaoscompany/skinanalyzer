@@ -112,10 +112,9 @@ class User extends CI_Controller {
 				));
 			}
 			$images = json_decode($bucket['images'], true);
-			echo "IMAGES: " . json_encode($images) . "\n";
 			for ($j=0; $j<sizeof($images); $j++) {
 				$image = $images[$j];
-				echo "IMAGE: " . json_encode($image) . "\n";
+				echo "UUID: " . $image['uuid'] . "\n";
 				if ($this->db->query("SELECT * FROM `bucket_images` WHERE `uuid`='" . $image['uuid'] . "'")->num_rows() > 0) {
 					$this->db->where("uuid", $image['uuid']);
 					$this->db->update("bucket_images", array(
