@@ -77,6 +77,14 @@ class User extends CI_Controller {
 		}
 	}
 	
+	private function get_real_json_array($array, $indexName) {
+		if (isset($array[$indexName])) {
+			return json_decode($array[$indexName], true);
+		} else {
+			return json_decode(array());
+		}
+	}
+	
 	private function get_real_int($array, $indexName) {
 		if (isset($array[$indexName])) {
 			return intval($array[$indexName]);
@@ -114,7 +122,7 @@ class User extends CI_Controller {
 						"type" => $this->get_real_int($image, 'type'),
 						"name" => $this->get_real_string($image, 'name'),
 						"path" => $this->get_real_string($image, 'path'),
-						"points" => $this->get_real_string($image, 'points'),
+						"points" => json_encode($this->get_real_json_array($image, 'points')),
 						"note" => $this->get_real_string($image, 'note'),
 						"date" => $this->get_real_string($image, 'date'),
 						"local" => $this->get_boolean_value($image['local'])
