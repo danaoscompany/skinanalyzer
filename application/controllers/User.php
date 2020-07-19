@@ -79,7 +79,7 @@ class User extends CI_Controller {
 	
 	private function get_real_json_array($array, $indexName) {
 		if (isset($array[$indexName])) {
-			return json_decode($array[$indexName], true);
+			return $array[$indexName];
 		} else {
 			return json_decode(array());
 		}
