@@ -61,12 +61,14 @@ class User extends CI_Controller {
 		echo json_encode($session);
 	}
 	
-	private function get_boolean_value($value) {
-		if ($value) {
-			return 1;
-		} else {
-			return 0;
+	private function get_boolean_value($jsonItem, $name) {
+		if (isset($jsonItem[$name]) {
+			$value = boolval($jsonItem[$name]);
+			if ($value) {
+				return 1;
+			}
 		}
+		return 0;
 	}
 	
 	private function get_real_string($array, $indexName) {
@@ -125,7 +127,7 @@ class User extends CI_Controller {
 						"points" => json_encode($this->get_real_json_array($image, 'points')),
 						"note" => $this->get_real_string($image, 'note'),
 						"date" => $this->get_real_string($image, 'date'),
-						"local" => $this->get_boolean_value($image['local'])
+						"local" => $this->get_boolean_value($image, 'local')
 					));
 				} else {
 					$this->db->insert("bucket_images", array(
@@ -137,7 +139,7 @@ class User extends CI_Controller {
 						"points" => json_encode($this->get_real_json_array($image, 'points')),
 						"note" => $this->get_real_string($image, 'note'),
 						"date" => $this->get_real_string($image, 'date'),
-						"local" => $this->get_boolean_value($image['local'])
+						"local" => $this->get_boolean_value($image, 'local')
 					));
 				}
 			}
