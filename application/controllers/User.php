@@ -15,6 +15,7 @@ class User extends CI_Controller {
 		$this->db->query("DELETE FROM `images`");
 		$this->db->query("DELETE FROM `devices`");
 		$this->db->query("DELETE FROM `sessions`");
+		$this->db->query("DELETE FROM `patients`");
 	}
 
 	public function add_patient() {
@@ -58,7 +59,7 @@ class User extends CI_Controller {
 			'session_uuid' => $uuid
 		))->result_array();
 		$session['patient_name'] = $this->db->get_where('patients', array(
-			'id' => intval($session['patient_id'])
+			'uuid' => $session['patient_uuid']
 		))->row_array()['name'];
 		echo json_encode($session);
 	}
@@ -104,45 +105,56 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `buckets` WHERE `uuid`='" . $bucket['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $bucket['uuid']);
 				$this->db->update("buckets", array(
+					"uuid" => $this->get_real_string($bucket, 'uuid'),
 					"user_id" => $this->get_real_int($bucket, 'user_id'),
 					"session_uuid" => $this->get_real_string($bucket, 'session_uuid'),
 					"device_uuid" => $this->get_real_string($bucket, 'device_uuid')
 				));
 			} else {
 				$this->db->insert("buckets", array(
+					"uuid" => $this->get_real_string($bucket, 'uuid'),
 					"user_id" => $this->get_real_int($bucket, 'user_id'),
 					"session_uuid" => $this->get_real_string($bucket, 'session_uuid'),
 					"device_uuid" => $this->get_real_string($bucket, 'device_uuid')
 				));
 			}
-			$images = json_decode($bucket['images'], true);
+			$images = json_decode($this->get_real_json_array($bucket, 'images'), true);
 			for ($j=0; $j<sizeof($images); $j++) {
 				$image = $images[$j];
-				if ($this->db->query("SELECT * FROM `bucket_images` WHERE `uuid`='" . $this->get_real_string($image, 'uuid') . "'")->num_rows() > 0) {
-					$this->db->where("uuid", $this->get_real_string($image, 'uuid'));
-					$this->db->update("bucket_images", array(
-						"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
-						"session_uuid" => $this->get_real_string($image, 'session_uuid'),
-						"type" => $this->get_real_int($image, 'type'),
-						"name" => $this->get_real_string($image, 'name'),
-						"path" => $this->get_real_string($image, 'path'),
-						"points" => json_encode($this->get_real_json_array($image, 'points')),
-						"note" => $this->get_real_string($image, 'note'),
-						"date" => $this->get_real_string($image, 'date'),
-						"local" => $this->get_boolean_value($image, 'local')
-					));
-				} else {
-					$this->db->insert("bucket_images", array(
-						"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
-						"session_uuid" => $this->get_real_string($image, 'session_uuid'),
-						"type" => $this->get_real_int($image, 'type'),
-						"name" => $this->get_real_string($image, 'name'),
-						"path" => $this->get_real_string($image, 'path'),
-						"points" => json_encode($this->get_real_json_array($image, 'points')),
-						"note" => $this->get_real_string($image, 'note'),
-						"date" => $this->get_real_string($image, 'date'),
-						"local" => $this->get_boolean_value($image, 'local')
-					));
+				$imageUUID = $this->get_real_string($image, 'uuid');
+				if ($imageUUID != "") {
+					$newImagePath = $_FILES[$imageUUID]['name'];
+					move_uploaded_file($_FILES[$imageUUID]['tmp_name'], "userdata/" . $newImagePath);
+					if ($this->db->query("SELECT * FROM `bucket_images` WHERE `uuid`='" . $imageUUID . "'")->num_rows() > 0) {
+						$this->db->where("uuid", $this->get_real_string($image, 'uuid'));
+						$this->db->update("bucket_images", array(
+							"user_id" => $this->get_real_int($bucket, 'user_id'),
+							"uuid" => $this->get_real_string($image, 'uuid'),
+							"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
+							"session_uuid" => $this->get_real_string($image, 'session_uuid'),
+							"type" => $this->get_real_int($image, 'type'),
+							"name" => $this->get_real_string($image, 'name'),
+							"path" => $newImagePath,
+							"points" => json_encode($this->get_real_json_array($image, 'points')),
+							"note" => $this->get_real_string($image, 'note'),
+							"date" => $this->get_real_string($image, 'date'),
+							"local" => $this->get_boolean_value($image, 'local')
+						));
+					} else {
+						$this->db->insert("bucket_images", array(
+							"user_id" => $this->get_real_int($bucket, 'user_id'),
+							"uuid" => $this->get_real_string($image, 'uuid'),
+							"bucket_uuid" => $this->get_real_string($image, 'bucket_uuid'),
+							"session_uuid" => $this->get_real_string($image, 'session_uuid'),
+							"type" => $this->get_real_int($image, 'type'),
+							"name" => $this->get_real_string($image, 'name'),
+							"path" => $newImagePath,
+							"points" => json_encode($this->get_real_json_array($image, 'points')),
+							"note" => $this->get_real_string($image, 'note'),
+							"date" => $this->get_real_string($image, 'date'),
+							"local" => $this->get_boolean_value($image, 'local')
+						));
+					}
 				}
 			}
 		}
@@ -156,6 +168,7 @@ class User extends CI_Controller {
 				$this->db->where("uuid", $device['uuid']);
 				$this->db->update("devices", array(
 					"user_id" => $this->get_real_int($device, 'user_id'),
+					"uuid" => $this->get_real_string($device, 'uuid'),
 					"device" => $this->get_real_string($device, 'device'),
 					"model" => $this->get_real_string($device, 'model'),
 					"type" => $this->get_real_string($device, 'type')
@@ -163,6 +176,7 @@ class User extends CI_Controller {
 			} else {
 				$this->db->insert("devices", array(
 					"user_id" => $this->get_real_int($device, 'user_id'),
+					"uuid" => $this->get_real_string($device, 'uuid'),
 					"device" => $this->get_real_string($device, 'device'),
 					"model" => $this->get_real_string($device, 'model'),
 					"type" => $this->get_real_string($device, 'type')
@@ -178,6 +192,7 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `patients` WHERE `uuid`='" . $patient['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $patient['uuid']);
 				$this->db->update("patients", array(
+					"uuid" => $this->get_real_string($patient, 'uuid'),
 					"user_id" => $this->get_real_int($patient, 'user_id'),
 					"custom_id" => $this->get_real_string($patient, 'custom_id'),
 					"name" => $this->get_real_string($patient, 'name'),
@@ -191,6 +206,7 @@ class User extends CI_Controller {
 				));
 			} else {
 				$this->db->insert("patients", array(
+					"uuid" => $this->get_real_string($patient, 'uuid'),
 					"user_id" => $this->get_real_int($patient, 'user_id'),
 					"custom_id" => $this->get_real_string($patient, 'custom_id'),
 					"name" => $this->get_real_string($patient, 'name'),
@@ -213,15 +229,19 @@ class User extends CI_Controller {
 			if ($this->db->query("SELECT * FROM `sessions` WHERE `uuid`='" . $session['uuid'] . "'")->num_rows() > 0) {
 				$this->db->where("uuid", $session['uuid']);
 				$this->db->update("sessions", array(
+					"uuid" => $this->get_real_string($session, 'uuid'),
+					"user_id" => $this->get_real_int($session, 'user_id'),
 					"name" => $this->get_real_string($session, 'name'),
 					"date" => $this->get_real_string($session, 'date'),
-					"patient_id" => $this->get_real_int($session, 'patient_id'),
+					"patient_uuid" => $this->get_real_string($session, 'patient_uuid'),
 				));
 			} else {
 				$this->db->insert("sessions", array(
+					"uuid" => $this->get_real_string($session, 'uuid'),
+					"user_id" => $this->get_real_int($session, 'user_id'),
 					"name" => $this->get_real_string($session, 'name'),
 					"date" => $this->get_real_string($session, 'date'),
-					"patient_id" => $this->get_real_string($session, 'patient_id'),
+					"patient_uuid" => $this->get_real_string($session, 'patient_uuid'),
 				));
 			}
 		}
