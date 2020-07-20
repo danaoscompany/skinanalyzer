@@ -374,7 +374,7 @@ class User extends CI_Controller {
 	public function login() {
 		$email = $this->input->post('email');
 		$password = $this->input->post('password');
-		$this->db->where('email', $email, 'password', $password);
+		$this->db->where('email', $email)->where('password', $password);
 		$users = $this->db->get('users')->result_array();
 		if (sizeof($users) > 0) {
 			$user = $users[0];
@@ -383,7 +383,7 @@ class User extends CI_Controller {
 		} else {
 			echo json_encode(array('response_code' => -1));
 		}
-	}
+	} 
 
 	public function signup() {
 		$firstName = $this->input->post('first_name');
