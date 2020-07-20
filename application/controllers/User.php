@@ -13,6 +13,8 @@ class User extends CI_Controller {
 		$this->db->query("DELETE FROM `buckets`");
 		$this->db->query("DELETE FROM `bucket_images`");
 		$this->db->query("DELETE FROM `images`");
+		$this->db->query("DELETE FROM `devices`");
+		$this->db->query("DELETE FROM `sessions`");
 	}
 
 	public function add_patient() {
