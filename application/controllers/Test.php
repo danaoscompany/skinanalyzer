@@ -1,5 +1,7 @@
 <?php
 
+include "FCM.php";
+
 class Test extends CI_Controller {
 	
 	public function email() {
@@ -21,6 +23,10 @@ class Test extends CI_Controller {
 		$message = str_replace("[CODE]", "123456", $message);
 		$this->email->message($message);
 		$this->email->send();
+	}
+	
+	public function fcm() {
+		FCM::send_message('This is title', 'This is body', 'd6hP-BDWTTOlq5-GJ22x6H:APA91bG_f5j6dF4aCKX1TaZIcd-545bnzxFrSpGPih3W0P8pMuw5ES_90wfEDtRTK_8i8lFQtx8cT4taGgiJFXx1MZysGMBU-5rQ-yo8Omm2ns9gyMHWFlcUyfRkEX4c_EAzDtMRDQ0E', array());
 	}
 	
 	public function test2() {

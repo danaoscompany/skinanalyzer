@@ -2,6 +2,72 @@
 
 class Admin extends CI_Controller {
 
+	public function add_user() {
+		$firstName = $this->input->post('first_name');
+		$lastName = $this->input->post('last_name');
+		$email = $this->input->post('email');
+		$password = $this->input->post('password');
+		$address = $this->input->post('address');
+		$phone = $this->input->post('phone');
+		$city = $this->input->post('city');
+		$province = $this->input->post('province');
+		$this->db->where('email', $email)->where('phone', $phone);
+		$users = $this->db->get('users')->result_array();
+		if (sizeof($users) > 0) {
+			echo json_encode(array(
+				'response_code' => -1
+			));
+			return;
+		}
+		$this->db->insert('users', array(
+			'first_name' => $firstName,
+			'last_name' => $lastName,
+			'email' => $email,
+			'phone' => $phone,
+			'password' => $password,
+			'address' => $address,
+			'city' => $city,
+			'province' => $province
+		));
+		echo json_encode(array(
+			'response_code' => 1
+		));
+	}
+
+	public function edit_user() {
+		$id = intval($this->input->post('id'));
+		$firstName = $this->input->post('first_name');
+		$lastName = $this->input->post('last_name');
+		$email = $this->input->post('email');
+		$password = $this->input->post('password');
+		$address = $this->input->post('address');
+		$phone = $this->input->post('phone');
+		$city = $this->input->post('city');
+		$province = $this->input->post('province');
+		$this->db->where('email', $email)->where('phone', $phone);
+		$users = $this->db->get('users')->result_array();
+		if (sizeof($users) > 0) {
+			echo json_encode(array(
+				'response_code' => -1
+			));
+			return;
+		}
+		$this->db->where('id', $id);
+		$this->db->update('users', array(
+			'first_name' => $firstName,
+			'last_name' => $lastName,
+			'email' => $email,
+			'phone' => $phone,
+			'password' => $password,
+			'address' => $address,
+			'city' => $city,
+			'province' => $province
+		));
+		echo json_encode(array(
+			'response_code' => 1
+		));
+	}
+
 	public function update_zodiac_descriptions() {
 		$this->db->query("DELETE FROM `zodiacs`");
 		$commons = json_decode($_POST['commons'], true);

@@ -1,0 +1,1 @@
+{"payment_id":"1487156512722","callback_virtual_account_id":"58a434ba39cc9e4a230d5a2b","owner_id":"5824128aa6f9f9b648be9d76","external_id":"fixed-va-1487156410","account_number":"1001470126","bank_code":"MANDIRI","amount":80000,"transaction_timestamp":"2017-02-15T11:01:52.722Z","merchant_code":"88464","id":"58a435201b6ce2a355f46070"}

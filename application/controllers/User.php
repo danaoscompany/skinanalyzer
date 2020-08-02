@@ -1,6 +1,87 @@
 <?php
 
+include "FCM.php";
+
 class User extends CI_Controller {
+
+	public function purchase() {
+		$userID = intval($this->input->post('user_id'));
+		$externalID = $this->input->post('external_id');
+		$type = $this->input->post('type');
+		$amount = intval($this->input->post('amount'));
+		$date = $this->input->post('date');
+		$this->db->where('user_id', $userID)->where('type', $type);
+		$results = $this->db->get('pending_payments')->result_array();
+		if (sizeof($results) > 0) {
+			$this->db->where('user_id', $userID)->where('type', $type);
+			$this->db->delete('pending_payments');
+		}
+		$this->db->insert('pending_payments', array(
+			'user_id' => $userID,
+			'external_id' => $externalID,
+			'type' => $type,
+			'amount' => $amount,
+			'date' => $date
+		));
+	}
+	
+	public function get_premium_price() {
+		echo $this->db->get('settings')->row_array()['premium_price'];
+	}
+	
+	public function update_payment_callback() {
+		$externalID = $this->input->post('external_id');
+		$callback = $this->input->post('callback');
+		$this->db->where('external_id', $externalID);
+		$this->db->update('pending_payments', array(
+			'callback' => $callback
+		));
+	}
+	
+	public function update_premium_status() {
+		$userID = intval($this->input->post('user_id'));
+		$premium = intval($this->input->post('premium'));
+		$this->db->where('id', $userID);
+		$this->db->update('users', array(
+			'premium' => 1
+		));
+	}
+	
+	public function payment_done() {
+		$data = json_decode(file_get_contents("php://input"), true);
+		$externalID = $data['external_id'];
+		$this->db->where('external_id', $externalID);
+		$this->db->update('pending_payments', array(
+			'status' => 'paid',
+			'paid_callback' => json_encode($data)
+		));
+		$this->db->where('external_id', $externalID);
+		$payment = $this->db->get('pending_payments')->row_array();
+		$this->db->where('id', intval($payment['id']));
+		$this->db->delete('pending_payments');
+		$this->db->insert('payment_history', array(
+			'user_id' => intval($payment['user_id']),
+			'external_id' => $payment['external_id'],
+			'amount' => intval($payment['amount']),
+			'type' => $payment['type'],
+			'date' => $payment['date'],
+			'status' => $payment['status'],
+			'payment_url' => $payment['payment_url'],
+			'callback' => $payment['callback'],
+			'paid_callback' => $payment['paid_callback']
+		));
+		$userID = intval($payment['user_id']);
+		$this->db->where('id', $userID);
+		$user = $this->db->get('users')->row_array();
+		$fcmID = $user['fcm_id'];
+		FCM::send_message('Pembayaran sudah Anda lakukan', 'Klik untuk melihat info lebih lanjut', $user['fcm_id'], array(
+			'action' => 'payment_done',
+			'external_id' => $externalID,
+			'callback' => $data,
+			'type' => $payment['type'],
+			'user_id' => $userID
+		));
+	}
 
 	public function clear() {
 		$this->db->query("DELETE FROM `buckets`");
